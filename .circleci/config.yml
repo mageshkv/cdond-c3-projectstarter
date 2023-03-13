@@ -146,7 +146,7 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
             - project/.circleci/outputs/backend_url.txt
-      - destroy_environment:
+      
 
           
       
