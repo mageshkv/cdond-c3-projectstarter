@@ -158,8 +158,8 @@ jobs:
           command: |
             apk add --update ansible
             ansible --version
-            sudo apt install gzip
-            sudo apt install tar
+            apt install gzip
+            apt install tar
             pip3 install --upgrade pip
             pip3 install awscli
             aws --version
