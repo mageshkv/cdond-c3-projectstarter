@@ -141,8 +141,8 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - cdond-c3-projectstarter/.circleci/ansible/inventory.txt
-            - cdond-c3-projectstarter/.circleci/outputs/backend_url.txt
+            - .circleci/ansible/inventory.txt
+            - .circleci/outputs/backend_url.txt
 
   configure-infrastructure:
     docker:
