@@ -141,8 +141,8 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt
-            - project/.circleci/outputs/backend_url.txt
+            - cdond-c3-projectstarter/.circleci/ansible/inventory.txt
+            - cdond-c3-projectstarter/.circleci/outputs/backend_url.txt
 
   configure-infrastructure:
     docker:
@@ -161,14 +161,36 @@ jobs:
             pip3 install --upgrade pip
             pip3 install awscli
             aws --version
-            exit 1
+           
       - run:
           name: Configure server
           command: |
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
-            exit 1
-      
+           
+  run-migrations:
+    
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run:
+          name: Run migrations
+          command: |
+            cd backend
+            npm install
+            touch migrations_log.txt
+            npm run migrations >> migrations_log.txt
+            cat migrations_log.txt
+      - run:
+          name: Send migration results to kvd
+          working_directory: ./backend
+          command: |
+            if grep -q "has been executed successfully" migrations.txt; then 
+             curl https://kvdb.io/EsD4FsV2JDBzCseAAa2sn8/migration_$\{CIRCLE_WORKFLOW_ID:0:7\}  -d '1'
+            fi
+
+     # Here's where you will add some code to rollback on failure
 
       
 
