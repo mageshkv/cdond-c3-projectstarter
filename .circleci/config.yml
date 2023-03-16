@@ -133,7 +133,7 @@ jobs:
           command: |
             pwd
             ls
-            cd ansible
+            
             echo [web] > inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
