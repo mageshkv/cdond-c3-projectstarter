@@ -145,7 +145,8 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt
+          #  - project/.circleci/ansible/inventory.txt
+            - inventory.txt
             - project/.circleci/outputs/backend_url.txt
 
   configure-infrastructure:
@@ -169,7 +170,6 @@ jobs:
       - run:
           name: Configure server
           command: |
-            cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
            
   run-migrations:
