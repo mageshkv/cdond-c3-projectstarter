@@ -146,7 +146,7 @@ jobs:
           root: ~/
           paths:
           #  - project/.circleci/ansible/inventory.txt
-            - inventory.txt
+            - project/inventory.txt
             - project/.circleci/outputs/backend_url.txt
 
   configure-infrastructure:
