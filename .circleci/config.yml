@@ -141,8 +141,8 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - .circleci/ansible/inventory.txt
-            - .circleci/outputs/backend_url.txt
+            - project/.circleci/ansible/inventory.txt
+            - project/.circleci/outputs/backend_url.txt
 
   configure-infrastructure:
     docker:
