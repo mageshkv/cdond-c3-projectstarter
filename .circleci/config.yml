@@ -315,6 +315,7 @@ jobs:
           name: Save all db varibles in env file 
           command: |
             ls
+            pwd
             cd backend
             echo ENVIRONMENT=production >> .env
             echo NODE_ENV=production >> .env
