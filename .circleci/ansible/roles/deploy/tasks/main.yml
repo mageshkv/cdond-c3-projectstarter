@@ -1,7 +1,7 @@
 ---
 - name: "Copy backend Files to EC2 instance"
   copy:
-    src: /root/project/artifact.tar.gz
+    src: /root/project/backend/artifact.tar.gz
     dest: /home/ubuntu
 
 - name: "unarchive directory"
