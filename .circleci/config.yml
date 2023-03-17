@@ -1,16 +1,46 @@
 version: 2.1
 commands:
+  print_pipeline_id:
+    steps:
+      - run:
+          name: Print workflow ID
+          # ${CIRCLE_WORKFLOW_ID:0:7} takes the first 7 chars of a Built-in environment variable
+          command:
+            echo ${CIRCLE_WORKFLOW_ID:0:7}
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     steps:
       - run:
+      # aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
           name: Destroy environments
           when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
-            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-
+  revert-migrations:
+    description: Revert the last migration if successfully run in the current workflow.
+    parameters:
+      # Add parameter here
+      workflow_id:
+        type: string
+    steps:
+      - print_pipeline_id
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Revert migrations
+          # Add when this will run
+          when: on_fail
+          command: |
+            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
+            echo "insecure" >> ~/.curlrc
+            SUCCESS=$(curl --insecure  https://kvdb.io/EsD4FsV2JDBzCseAAa2sn8/migration_<< parameters.workflow_id >>)            
+            if(( $SUCCESS==1 )); 
+            then
+              cd ~/project/backend
+              npm run migrations:revert             
+            fi
+            
 jobs:
   build-frontend:
     docker:
@@ -196,6 +226,49 @@ jobs:
             fi
 
      # Here's where you will add some code to rollback on failure
+  deploy-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      # Checkout code from git
+      - checkout
+      - attach_workspace:
+          at: ~/  
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt install -y tar gzip curl unzip
+      
+      - run:
+          name: Install aws-cli.
+          command: |
+            sudo apt install unzip curl
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
+            echo "AWS CLI version"
+            aws --version 
+            
+      - run:
+          name: Get backend url
+          command: |
+            export BACKEND_IP=$(cat ~/project/.circleci/ansible/inventory.txt | sed 1d)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run:
+          name: Deploy frontend objects
+          command: |
+            
+            cd frontend
+            npm install
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      # Here's where you will add some code to rollback on failure  
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
       
 
