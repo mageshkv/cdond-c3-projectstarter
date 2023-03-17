@@ -1,21 +1,14 @@
 ---
-- name: make dir 
-  become: true
-  file: 
-    path: /home/ubuntu/backend
-    state: directory
-    mode: 0755
-
 - name: copy artifact
   become: true
   copy: 
     src: ~/project/artifact.tar.gz
-    dest: /home/ubuntu/backend/artifact.tar.gz
+    dest: /home/ubuntu/artifact.tar.gz
 
 - name: Extract artifact files
   become: true
   shell: |
-    cd /home/ubuntu/backend
+    cd /home/ubuntu
     tar -xvf artifact.tar.gz
 - name: Executing node
   become: true
