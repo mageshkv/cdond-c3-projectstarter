@@ -293,7 +293,7 @@ jobs:
             pip3 install awscli
             rm -rf /var/cache/apk/*
       - run:
-        name: Save all db varibles in env file 
+          name: Save all db varibles in env file 
           command: |
             ls
             cd backend
