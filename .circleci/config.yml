@@ -186,7 +186,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["01:3a:bb:6b:ab:c7:2b:23:a0:35:07:5a:9f:77:0c:7d"]
+          fingerprints: ["6b:ad:49:f0:d1:2b:4c:23:8b:cd:d7:59:28:7b:7f:21"]
       - attach_workspace:
           at: ~/
       - run:
@@ -280,7 +280,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - add_ssh_keys:
-          fingerprints: ["01:3a:bb:6b:ab:c7:2b:23:a0:35:07:5a:9f:77:0c:7d"] 
+          fingerprints: ["6b:ad:49:f0:d1:2b:4c:23:8b:cd:d7:59:28:7b:7f:21"] 
        
       - run:
           name: Install dependencies
@@ -309,8 +309,8 @@ jobs:
             cd .circleci/ansible
             echo "Contents of the inventory.txt file is:"
             ansible-playbook -i inventory.txt deploy-backend.yml
-      - revert-migrations:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      #- revert-migrations:
+    #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       #- destroy-environment
 
   smoke-test:
@@ -396,5 +396,6 @@ workflows:
           requires: [run-migrations] 
       - deploy-backend:
           requires: [run-migrations]  
+
       - smoke-test:
           requires: [deploy-frontend,deploy-backend] 
