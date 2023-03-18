@@ -48,6 +48,7 @@
   shell:
     cd ~/Udapeople
     pm2 start npm -- run start
+    pm2 start main.js --update-env
     sleep 60
 
 
