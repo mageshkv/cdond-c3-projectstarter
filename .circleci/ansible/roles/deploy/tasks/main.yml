@@ -1,25 +1,53 @@
 ---
-- name: copy artifact
+- name: "upgrade packages."
   become: true
-  copy: 
-    src: ~/project/artifact.tar.gz
-    dest: /home/ubuntu/artifact.tar.gz
+  apt:
+    upgrade: "yes"
 
-- name: Extract artifact files
+- name: "install dependencies."
+  become: true
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
+
+- name: "install pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
+
+- name: "Create Directory"
+  become: true
+  file:
+    path: /home/ubuntu/Udapeople
+    state: directory
+
+- name: "Copy Artifact"
+  become: true
+  copy:
+    src: ~/project/artifact.tar.gz
+    dest: /home/ubuntu/Udapeople/artifact.tar.gz
+
+- name: "Extract Artifact"
   become: true
   shell: |
-    cd /home/ubuntu
-    tar -xvf artifact.tar.gz
+    cd /home/ubuntu/Udapeople
+    tar -vxf artifact.tar.gz
     rm -f artifact.tar.gz
-- name: Executing node
+- name: "Install NPM"
   become: true
-  shell: |
-    cd /home/ubuntu/backend
+  shell:
+    cd /home/ubuntu/Udapeople
     npm install
-    pm2 stop default
-    pm2 start npm -- start
-    
-    cd dist
-    pm2 start main.js --update-env
+
+- name: "Start Application"
+  become: true
+  shell:
+    cd ~/Udapeople
+    pm2 start npm -- run start
     sleep 60
+
 
