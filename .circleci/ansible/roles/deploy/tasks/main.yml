@@ -32,7 +32,7 @@
   become: true
   unarchive:
     src: /home/ubuntu/backend/artifact.tar.gz
-    dest: /home/ubuntu/backend
+    dest: /home/ubuntu
     copy: no
 - name: Install node & build package
   become: true
