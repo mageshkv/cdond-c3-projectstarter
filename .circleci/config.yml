@@ -454,6 +454,36 @@ jobs:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - destroy-environment       
       
+  cleanup:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yum install -y curl
+            yum install -y tar gzip
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Remove old stacks and files
+          command: |
+            OldWorkflowID=$(cat ~/oldworkflowID.txt)
+            currentWorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
+            echo "oldWorkflow: $OldWorkflowID"
+            echo "currentWorflow: $currentWorkflowID"
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+            echo Stack Names: "${STACKS[@]}"
+            if [[ "${currentWorkflowID}" != "${OldWorkflowID}" ]]
+            then
+              echo "Cleaning up started--------------------------------------------------------------------"
+              aws --region us-west-2 s3 rm "s3://${OldWorkflowID}" --recursive
+              aws --region us-west-2 cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID:0:7}"
+              aws --region us-west-2 cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID:0:7}"
+            else
+              echo "$OldWorkflowID==$currentWorkflowID -> all good now"
+            fi
 workflows:
   default:
     jobs:
@@ -484,3 +514,5 @@ workflows:
           requires: [deploy-frontend, deploy-backend] 
       - cloudfront-update:
           requires: [smoke-test]
+      - cleanup:
+          requires: [cloudfront-update]
