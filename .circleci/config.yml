@@ -381,6 +381,7 @@ jobs:
           name: Backend smoke test.
           command: |
             pwd
+            ls
             echo " --- Cat inventory file --- "            
             export BACKEND_IP=$(cat ~/project/.circleci/ansible/inventory.txt | sed 1d)
             echo "The BACKEND IP: ${BACKEND_IP}"
