@@ -178,7 +178,7 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-          #  - project/inventory.txt
+         
             - project/.circleci/outputs/backend_url.txt
 
   configure-infrastructure:
@@ -248,6 +248,9 @@ jobs:
             if grep -q "has been executed successfully" ~/project/backend/migrations_log.txt ; then 
              curl https://kvdb.io/EsD4FsV2JDBzCseAAa2sn8/migration_$\{CIRCLE_WORKFLOW_ID:0:7\}  -d '1'
             fi
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
 
      # Here's where you will add some code to rollback on failure
   deploy-frontend:
@@ -293,7 +296,7 @@ jobs:
       # Here's where you will add some code to rollback on failure  
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      #- destroy-environment
+      - destroy-environment
 
   deploy-backend:
     docker:
@@ -353,9 +356,9 @@ jobs:
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i inventory.txt deploy-backend.yml
-      #- revert-migrations:
-    #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      #- destroy-environment
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
 
   smoke-test:
     docker:
@@ -405,15 +408,15 @@ jobs:
             if curl -s ${URL} | grep "Welcome"
             then
                 # Change this to 0 after the job fails
-                exit 0
+                exit 1
             else
                 exit 1
             fi
 
       # HHere's where you will add some code to rollback on failure
-      #- revert-migrations:
-      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      #- destroy-environment
+      - revert-migrations:
+         workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
   cloudfront-update:
     docker:
       # Docker image here that supports AWS CLI
