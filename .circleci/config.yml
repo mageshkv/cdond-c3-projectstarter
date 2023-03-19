@@ -481,7 +481,7 @@ jobs:
             if [[ "${currentWorkflowID}" != "${OldWorkflowID}" ]]
             then
               echo "Cleaning up started--------------------------------------------------------------------"
-              aws --region us-west-2 s3 rm "s3://${OldWorkflowID}" --recursive
+              aws --region us-west-2 s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
               aws --region us-west-2 cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID:0:7}"
               aws --region us-west-2 cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID:0:7}"
             else
