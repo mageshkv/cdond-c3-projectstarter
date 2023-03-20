@@ -240,7 +240,6 @@ jobs:
           command: |
             cd backend
             npm install
-            pip3 install awscli
             touch migrations_log.txt
             npm run migrations >> migrations_log.txt
             cat migrations_log.txt
@@ -253,7 +252,7 @@ jobs:
             fi
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-environment
+      #- destroy-environment
 
      # Here's where you will add some code to rollback on failure
   deploy-frontend:
