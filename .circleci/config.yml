@@ -240,6 +240,7 @@ jobs:
           command: |
             cd backend
             npm install
+            pip3 install awscli
             touch migrations_log.txt
             npm run migrations >> migrations_log.txt
             cat migrations_log.txt
@@ -410,7 +411,7 @@ jobs:
             if curl -s ${URL} | grep "Welcome"
             then
                 # Change this to 0 after the job fails
-                exit 0
+                exit 1
             else
                 exit 1
             fi
